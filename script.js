@@ -26,11 +26,12 @@ const projects = [
     visual: "ndi",
   },
   {
-    type: "Systems design · Broadcasting",
-    title: "School Broadcast Systems",
+    type: "Web app · Travel tracker",
+    title: "Where’s Freddy?",
     description:
-      "Reliable multi-room sports production built around ATEM switchers, PTZ cameras, X32 audio, live graphics, and remote operators.",
-    status: "Ongoing",
+      "A public, map-based tracker following Freddy’s World Cup road trip through verified social updates, location history, and a filterable timeline.",
+    status: "Live project",
+    link: "https://joewalls3.github.io/Freddy-tracker/",
     visual: "signal",
   },
 ];
@@ -73,10 +74,10 @@ const visuals = {
       <span class="signal-path one"></span>
       <span class="signal-path two"></span>
       <span class="signal-path three"></span>
-      <span class="signal-node camera">CAM</span>
-      <span class="signal-node switcher">ATEM</span>
-      <span class="signal-node audio">X32</span>
-      <span class="signal-node graphics">GFX</span>
+      <span class="signal-node camera">START</span>
+      <span class="signal-node switcher">POST</span>
+      <span class="signal-node audio">NOW</span>
+      <span class="signal-node graphics">ROUTE</span>
     </div>
   `,
 };
@@ -93,7 +94,7 @@ function createProjectCard(project) {
   article.className = "project-card reveal";
 
   const action = project.link
-    ? `<a class="project-action" href="${project.link}" target="_blank" rel="noreferrer" aria-label="Open ${project.title} on GitHub">↗</a>`
+    ? `<a class="project-action" href="${project.link}" target="_blank" rel="noreferrer" aria-label="Open ${project.title}">↗</a>`
     : `<span class="project-status">${project.status}</span>`;
 
   article.innerHTML = `
