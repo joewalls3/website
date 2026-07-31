@@ -1,39 +1,85 @@
 const projects = [
   {
-    number: "01",
     type: "Product design · AV systems",
     title: "RackStack",
     description:
-      "A smarter platform for planning professional AV racks, tracing every connection, and turning complex systems into clean, field-ready documentation.",
+      "A smarter workspace for planning AV racks, tracing every connection, and turning complex systems into clean, field-ready documentation.",
     status: "In development",
+    visual: "rack",
   },
   {
-    number: "02",
     type: "Web app · Live events",
     title: "The Floor Timer",
     description:
-      "A browser-based two-team competition timer with remote control, operator-friendly controls, and a display built to be read from across the room.",
+      "A browser-based two-team competition timer with remote control and a display built to be read from across the room.",
     status: "Public project",
     link: "https://github.com/joewalls3/thefloor-timer",
+    visual: "timer",
   },
   {
-    number: "03",
     type: "Video · Network production",
     title: "NDI Camera App",
     description:
-      "An experiment in flexible network video—exploring how phones and computers can become useful camera sources in lightweight production workflows.",
+      "An experiment in flexible network video—turning everyday devices into useful camera sources for lightweight production workflows.",
     status: "Public project",
     link: "https://github.com/joewalls3/ndicameraapp",
+    visual: "ndi",
   },
   {
-    number: "04",
     type: "Systems design · Broadcasting",
     title: "School Broadcast Systems",
     description:
-      "Designing reliable multi-room sports production workflows around ATEM switchers, PTZ cameras, X32 audio, live graphics, and remote operators.",
+      "Reliable multi-room sports production built around ATEM switchers, PTZ cameras, X32 audio, live graphics, and remote operators.",
     status: "Ongoing",
+    visual: "signal",
   },
 ];
+
+const visuals = {
+  rack: `
+    <div class="rack-visual" aria-hidden="true">
+      <span class="rack-unit"></span>
+      <span class="rack-unit active"></span>
+      <span class="rack-unit"></span>
+      <span class="rack-unit"></span>
+      <span class="rack-unit active"></span>
+      <span class="rack-unit"></span>
+      <span class="rack-unit"></span>
+    </div>
+  `,
+  timer: `
+    <div class="timer-visual" aria-hidden="true">
+      <div class="team-timer active">
+        <span>Team blue</span>
+        <strong>12:43</strong>
+      </div>
+      <div class="team-timer">
+        <span>Team gold</span>
+        <strong>09:16</strong>
+      </div>
+      <div class="timer-controls"><i></i><i></i><i></i></div>
+    </div>
+  `,
+  ndi: `
+    <div class="ndi-visual" aria-hidden="true">
+      <div class="camera-tile program"><span>CAM 01 · PGM</span></div>
+      <div class="camera-tile"><span>CAM 02</span></div>
+      <div class="camera-tile"><span>CAM 03</span></div>
+      <div class="camera-tile"><span>GFX · NDI</span></div>
+    </div>
+  `,
+  signal: `
+    <div class="signal-visual" aria-hidden="true">
+      <span class="signal-path one"></span>
+      <span class="signal-path two"></span>
+      <span class="signal-path three"></span>
+      <span class="signal-node camera">CAM</span>
+      <span class="signal-node switcher">ATEM</span>
+      <span class="signal-node audio">X32</span>
+      <span class="signal-node graphics">GFX</span>
+    </div>
+  `,
+};
 
 const projectList = document.querySelector("[data-project-list]");
 const header = document.querySelector("[data-header]");
@@ -47,25 +93,25 @@ function createProjectCard(project) {
   article.className = "project-card reveal";
 
   const action = project.link
-    ? `<a class="project-link" href="${project.link}" target="_blank" rel="noreferrer" aria-label="Open ${project.title} on GitHub">↗</a>`
+    ? `<a class="project-action" href="${project.link}" target="_blank" rel="noreferrer" aria-label="Open ${project.title} on GitHub">↗</a>`
     : `<span class="project-status">${project.status}</span>`;
 
   article.innerHTML = `
-    <span class="project-index">${project.number}</span>
-    <span class="project-type">${project.type}</span>
-    <div class="project-main">
-      <h3>${project.title}</h3>
-      <p>${project.description}</p>
+    <div class="project-visual">${visuals[project.visual]}</div>
+    <div class="project-copy">
+      <div>
+        <p class="project-meta">${project.type}</p>
+        <h3>${project.title}</h3>
+      </div>
+      ${action}
+      <p class="project-description">${project.description}</p>
     </div>
-    ${action}
   `;
 
   return article;
 }
 
-projects.forEach((project) => {
-  projectList?.append(createProjectCard(project));
-});
+projects.forEach((project) => projectList?.append(createProjectCard(project)));
 
 const revealObserver = new IntersectionObserver(
   (entries) => {
@@ -75,11 +121,11 @@ const revealObserver = new IntersectionObserver(
       revealObserver.unobserve(entry.target);
     });
   },
-  { threshold: 0.12, rootMargin: "0px 0px -40px" },
+  { threshold: 0.1, rootMargin: "0px 0px -35px" },
 );
 
 document.querySelectorAll(".reveal").forEach((element, index) => {
-  element.style.transitionDelay = `${Math.min(index % 4, 3) * 70}ms`;
+  element.style.transitionDelay = `${Math.min(index % 3, 2) * 65}ms`;
   revealObserver.observe(element);
 });
 
@@ -141,7 +187,7 @@ window.addEventListener("resize", () => {
   if (window.innerWidth > 760) setMenu(false);
 });
 
-year.textContent = new Date().getFullYear();
+if (year) year.textContent = new Date().getFullYear();
 updateHeader();
 updateClock();
 window.setInterval(updateClock, 1000);
