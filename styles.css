@@ -494,7 +494,7 @@ img {
 .portrait-frame::before {
   position: absolute;
   inset: 0;
-  z-index: 1;
+  z-index: 0;
   background:
     linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
@@ -503,24 +503,65 @@ img {
   mask-image: linear-gradient(to bottom, black, transparent 65%);
 }
 
-.portrait-frame img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: saturate(0.82) contrast(1.04);
+.portrait-graphic {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2.2rem;
+  background:
+    radial-gradient(circle at 74% 25%, rgba(125, 150, 255, 0.26), transparent 34%),
+    radial-gradient(circle at 28% 72%, rgba(215, 255, 95, 0.11), transparent 31%);
+}
+
+.portrait-graphic::after {
+  position: absolute;
+  inset: 1.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1.35rem;
+  content: "";
+}
+
+.portrait-graphic small,
+.portrait-graphic span {
+  position: relative;
+  z-index: 1;
+  color: var(--text-soft);
+  font-family: var(--mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
+.portrait-graphic strong {
+  position: relative;
+  z-index: 1;
+  margin: 1.25rem 0 1rem;
+  color: var(--text);
+  font-size: clamp(7.5rem, 15vw, 11rem);
+  font-weight: 790;
+  letter-spacing: -0.11em;
+  line-height: 0.72;
+  text-shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
 }
 
 .portrait-shade {
   position: absolute;
+  z-index: 2;
   inset: 0;
   background:
-    linear-gradient(to top, rgba(9, 11, 15, 0.92), transparent 48%),
+    linear-gradient(to top, rgba(9, 11, 15, 0.94), transparent 42%),
     linear-gradient(140deg, rgba(125, 150, 255, 0.08), transparent 45%);
+  pointer-events: none;
 }
 
 .portrait-label {
   position: absolute;
-  z-index: 2;
+  z-index: 3;
   right: 1.4rem;
   bottom: 1.3rem;
   left: 1.4rem;
