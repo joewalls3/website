@@ -1,0 +1,10 @@
+node_modules/
+.next/
+.vercel/
+.env*
+!.env.example
+npm-debug.log*
+design-qa.md
+*-reference.png
+*-render.png
+*-comparison.png

@@ -1,33 +1,50 @@
 # Joe Walls — Personal Website
 
-A fast, responsive personal portfolio for Joe Walls, focused on live production,
-broadcast systems, engineering, aviation, and automation.
+A Next.js portfolio and private owner dashboard for Joe Walls. The public site covers live production, engineering, automation, aviation, and current projects; Clerk provides OAuth and passkey-ready authentication for private tools.
 
-## Structure
+## Stack
 
-- `index.html` — page content and semantic structure
-- `styles.css` — visual design and responsive layouts
-- `script.js` — project data, navigation, clock, and scroll effects
-- `favicon.svg` — custom JW site icon
-- `.github/workflows/pages.yml` — GitHub Pages deployment
+- Next.js 16 App Router
+- React 19
+- Clerk authentication
+- Vercel deployment
 
-## Edit the project list
-
-Project content is stored at the top of `script.js`. Add another object to the
-`projects` array and the site will create the card automatically.
-
-## Preview locally
-
-No build step is required. Start any static file server from the repository:
+## Local development
 
 ```bash
-python3 -m http.server 8000
+npm install
+cp .env.example .env.local
+npm run dev
 ```
 
-Then visit `http://localhost:8000`.
+The public homepage works without Clerk keys. Until authentication is connected, `/sign-in` and `/dashboard` show a secure setup state and expose no private data.
 
-## Publish
+## Authentication setup
 
-Every push to `main` runs the GitHub Pages workflow. If Pages has not been enabled
-for the repository yet, open **Settings → Pages** and select **GitHub Actions** as
-the source.
+1. Import this repository into Vercel.
+2. Add Clerk from the Vercel Marketplace so `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` are provisioned.
+3. In Clerk, enable the OAuth providers you want, such as Google and GitHub.
+4. Enable passkey sign-in in Clerk.
+5. Sign in once, then set `OWNER_CLERK_USER_ID` in Vercel to the user ID shown on `/dashboard`.
+6. Redeploy so the owner authorization rule is active.
+
+Authentication and authorization are intentionally separate: Clerk verifies identity, while `OWNER_CLERK_USER_ID` decides who may access private dashboard content and APIs.
+
+## Key routes
+
+- `/` — public portfolio
+- `/sign-in` — OAuth/passkey sign-in
+- `/dashboard` — owner-only workspace
+- `/api/account` — owner-only API example
+
+## Deployment
+
+Vercel should detect Next.js automatically. The previous GitHub Pages workflow was removed because production hosting now belongs to Vercel.
+
+### Preview workflow
+
+1. Branch from the latest `main`.
+2. Commit and push the branch to GitHub.
+3. Build the Vercel preview from that branch.
+4. Open and verify the homepage, sign-in, and dashboard routes.
+5. Merge or promote only after the preview is confirmed working.
