@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { UserButton } from "@clerk/nextjs";
+import { AgentPanel } from "@/components/agent/agent-panel";
 import { isClerkConfigured, isOwner } from "@/lib/auth-config";
 
 export const metadata: Metadata = {
@@ -70,6 +71,7 @@ export default async function DashboardPage() {
         </Link>
         <nav className="dashboard-nav" aria-label="Dashboard navigation">
           <a className="is-active" href="#overview">Overview</a>
+          <a href="#agent">Agent</a>
           <a href="#projects">Projects</a>
           <a href="#server">Server</a>
         </nav>
@@ -84,6 +86,8 @@ export default async function DashboardPage() {
           </div>
           <span className="dashboard-secure">Secure session</span>
         </header>
+
+        <AgentPanel />
 
         <div className="dashboard-grid" id="projects">
           <article className="dashboard-card dashboard-card-wide">
