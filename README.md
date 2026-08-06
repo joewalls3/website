@@ -7,7 +7,7 @@ A Next.js portfolio and private owner dashboard for Joe Walls. The public site c
 - Next.js 16 App Router
 - React 19
 - Clerk authentication
-- OpenAI Responses API
+- Vercel AI Gateway with OpenAI Responses
 - Vercel deployment
 
 ## Local development
@@ -33,16 +33,18 @@ Authentication and authorization are intentionally separate: Clerk verifies iden
 
 ## Private website agent
 
-The owner dashboard includes a streamed OpenAI agent for planning, troubleshooting, writing, and technical work. The API route is protected by both Clerk authentication and the owner user ID check.
+The owner dashboard includes a streamed agent for planning, troubleshooting, writing, and technical work. The API route is protected by both Clerk authentication and the owner user ID check.
 
-Add these server-only variables in Vercel:
+On Vercel, the route authenticates to AI Gateway automatically with the deployment's short-lived OIDC identity. No OpenAI API key is stored in the repository or sent to the browser.
+
+For local development, either run `vercel env pull .env.local` to pull a temporary OIDC token or add an AI Gateway key:
 
 ```text
-OPENAI_API_KEY=your-encrypted-project-key
-OPENAI_MODEL=gpt-5.6-luna
+AI_GATEWAY_API_KEY=your_ai_gateway_key
+AI_MODEL=openai/gpt-5.6-luna
 ```
 
-Never prefix the API key with `NEXT_PUBLIC_`. The browser calls `/api/agent`; only the server sends requests to OpenAI. Conversation history currently stays in the browser and is included only with each agent request. The OpenAI request uses `store: false`.
+Conversation history currently stays in the browser and is included only with each agent request. Requests use the OpenAI Responses-compatible endpoint with `store: false`.
 
 ## Key routes
 

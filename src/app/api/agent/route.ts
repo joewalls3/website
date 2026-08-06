@@ -83,7 +83,7 @@ function extractTextDelta(rawEvent: string): string | null {
 
   if (event.type === "error" || event.type === "response.failed") {
     const message = event.error?.message ?? event.response?.error?.message;
-    throw new Error(message ?? "The OpenAI response stream failed.");
+    throw new Error(message ?? "The AI Gateway response stream failed.");
   }
 
   return null;
@@ -102,9 +102,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not authorized." }, { status: 403 });
   }
 
-  if (!process.env.OPENAI_API_KEY) {
+  const gatewayToken =
+    process.env.AI_GATEWAY_API_KEY ||
+    process.env.VERCEL_OIDC_TOKEN ||
+    request.headers.get("x-vercel-oidc-token");
+
+  if (!gatewayToken) {
     return NextResponse.json(
-      { error: "The OpenAI API key has not been added to Vercel yet." },
+      {
+        error:
+          "AI Gateway authentication is unavailable. On Vercel this is automatic; for local development, pull Vercel environment variables or add AI_GATEWAY_API_KEY.",
+      },
       { status: 503 },
     );
   }
@@ -127,16 +135,20 @@ export async function POST(request: Request) {
     );
   }
 
-  const upstreamResponse = await fetch("https://api.openai.com/v1/responses", {
+  const upstreamResponse = await fetch("https://ai-gateway.vercel.sh/v1/responses", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+      Authorization: `Bearer ${gatewayToken}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: process.env.OPENAI_MODEL ?? "gpt-5.6-luna",
+      model: process.env.AI_MODEL || "openai/gpt-5.6-luna",
       instructions: AGENT_INSTRUCTIONS,
-      input: messages,
+      input: messages.map((message) => ({
+        type: "message",
+        role: message.role,
+        content: message.content,
+      })),
       stream: true,
       store: false,
       max_output_tokens: 1_200,
@@ -149,14 +161,14 @@ export async function POST(request: Request) {
 
   if (!upstreamResponse.ok) {
     const details = await upstreamResponse.text();
-    console.error("OpenAI API request failed", upstreamResponse.status, details);
+    console.error("AI Gateway request failed", upstreamResponse.status, details);
 
     return NextResponse.json(
       {
         error:
           upstreamResponse.status === 401
-            ? "The OpenAI API key was rejected. Replace it in Vercel."
-            : "The agent could not start. Check the OpenAI project billing and model access.",
+            ? "Vercel AI Gateway rejected the deployment identity. Check the project’s OIDC and AI Gateway settings."
+            : "The agent could not start. Check AI Gateway credits and model access in Vercel.",
       },
       { status: 502 },
     );
@@ -200,7 +212,7 @@ export async function POST(request: Request) {
 
         controller.close();
       } catch (error) {
-        console.error("OpenAI streaming failed", error);
+        console.error("AI Gateway streaming failed", error);
         controller.error(new Error("The agent response was interrupted."));
       } finally {
         reader.releaseLock();
